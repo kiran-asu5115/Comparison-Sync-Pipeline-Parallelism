@@ -1,0 +1,2 @@
+gcloud compute ssh --zone "us-west4-a" "instance-1" --project "ordinal-case-380321"
+gcloud compute ssh --zone "us-west4-a" "instance-3" --project "ordinal-case-380321"
