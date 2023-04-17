@@ -23,26 +23,32 @@ def generate_random_array(n):
     return a
 
 
-def create_dataset_partitions(imagenet_folder, train_val_split):
-    imagenet_final_folder = os.path.join(os.getcwd(), "imagenet")
-    create_directory(imagenet_final_folder, delete_if_exists=True)
-    imagenet_train_folder = os.path.join(imagenet_final_folder, "train")
-    imagenet_val_folder = os.path.join(imagenet_final_folder, "val")
-    create_directory(imagenet_train_folder, delete_if_exists=True)
-    create_directory(imagenet_val_folder, delete_if_exists=True)
-    for dir in os.listdir(imagenet_folder):
-        image_dir = os.path.join(imagenet_folder, dir)
-        images = os.listdir(image_dir)
+def create_dataset_partitions(imagenet_src_dir, train_val_split):
+    imagenet_final_dir = os.path.join(os.getcwd(), "imagenet")
+    create_directory(imagenet_final_dir, delete_if_exists=True)
+    imagenet_train_dir = os.path.join(imagenet_final_dir, "train")
+    imagenet_val_dir = os.path.join(imagenet_final_dir, "val")
+    create_directory(imagenet_train_dir, delete_if_exists=True)
+    create_directory(imagenet_val_dir, delete_if_exists=True)
+    for label in os.listdir(imagenet_src_dir):
+        label_dir = os.path.join(imagenet_src_dir, label)
+        train_label_dir = os.path.join(imagenet_train_dir, label)
+        val_label_dir = os.path.join(imagenet_val_dir, label)
+        create_directory(train_label_dir, delete_if_exists=True)
+        create_directory(val_label_dir, delete_if_exists=True)
+
+        images = os.listdir(label_dir)
         image_dir_len = len(images)
         rand_arr = generate_random_array(image_dir_len)
         train_index_end = math.floor((train_val_split / 100) * image_dir_len)
+
         for i in range(0, image_dir_len, 1):
             image_name = images[rand_arr[i]]
-            image_path = os.path.join(image_dir, image_name)
-            if i <= train_index_end:
-                output_path = os.path.join(imagenet_train_folder, image_name)
+            image_path = os.path.join(label_dir, image_name)
+            if i < train_index_end:
+                output_path = os.path.join(train_label_dir, image_name)
             else:
-                output_path = os.path.join(imagenet_val_folder, image_name)
+                output_path = os.path.join(val_label_dir, image_name)
             shutil.copy(image_path, output_path)
 
 
