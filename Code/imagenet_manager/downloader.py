@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import os
+import shutil
+
 import numpy as np
 import requests
 import argparse
@@ -86,7 +88,9 @@ print([ class_info_dict[class_wnid]['class_name'] for class_wnid in classes_to_s
 imagenet_images_folder = os.path.join(args.data_root, 'imagenet_images')
 if not os.path.isdir(imagenet_images_folder):
     os.mkdir(imagenet_images_folder)
-
+else:
+    shutil.rmtree(imagenet_images_folder)
+    os.mkdir(imagenet_images_folder)
 
 scraping_stats = dict(
     all=dict(
@@ -195,8 +199,6 @@ def print_stats(cls, print_func):
         print_func(f'{100.0 * multi_stats.get(cls, "success")/multi_stats.get(cls, "tried")}% success rate for {cls} urls ')
     if multi_stats.get(cls, "success") > 0:
         print_func(f'{multi_stats.get(cls,"time_spent") * actual_processes_ratio / multi_stats.get(cls,"success")} seconds spent per {cls} succesful image download')
-
-
 
 lock = Lock()
 url_tries = Value('d', 0)
@@ -334,10 +336,9 @@ for class_wnid in classes_to_scrape:
     urls = [url.decode('utf-8') for url in resp.content.splitlines()]
     # print("URLs:", urls)
 
-    for url in urls:
-       get_image(url)
+    # for url in urls:
+    #    get_image(url)
 
-
-    # print(f"Multiprocessing workers: {args.multiprocessing_workers}")
-    # with Pool(processes=args.multiprocessing_workers) as p:
-    #     p.map(get_image,urls)
+    print(f"Multiprocessing workers: {args.multiprocessing_workers}")
+    with Pool(processes=args.multiprocessing_workers) as p:
+        p.map(get_image, urls)
